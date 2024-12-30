@@ -1,0 +1,109 @@
+<!-- File: problempage.html
+Authors: Charisman Aravinthan and Justin Dai
+Last Modified: June 2, 2023
+Version: 1.1.0
+This file contains the frontend for the problem page -->
+
+<!-- DOCTYPE already declared in base.html, so it is not needed here-->
+<!-- <body>, <head>, and <html> tags are also included from base.html-->
+{{define "content"}}
+<title>UCT | {{ .Pname }}</title>
+
+<!-- Displays problem name and description
+Authored by Justin-->
+<ol class="relative border-l border-gray-200 mb-[2%]">
+  <li class="ml-[5%]">
+    <h3 class="text-3xl font-semibold text-gray-900 ">{{.Pname}}</h3>
+    <p class="mt-5 text-1xl font-normal text-gray-800 break-words max-w-[60%]">
+      <!-- Uses mathjax to display math here-->
+      <div class="description" style="max-width: 60%; overflow-x: auto;">
+        {{.Pdescription}}
+      </div>
+    </p>
+  </li>
+</ol>
+
+<!-- Answer box for user submission
+Gives different responses to user based on answer/log in status
+Authored by Charisman-->
+<form action = "" method = "POST">
+  <div style="width: 20%;" class="ml-[5%]">
+    <label for="helper-text" class="block mb-2 text-sm font-medium text-gray-900 ">Your Answer:</label>
+    <input type="answer" id="answer" name=answer class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ">  
+  </div>
+</form>
+{{if eq .State "1"}}
+<p class="text-xs text-red-400 ml-[5%]">Please enter your answer here.</p>
+{{else if eq .State "2"}}
+<p class="text-xs text-green-400 ml-[5%]">Your answer is correct!</p>
+{{else if eq .State "3"}}
+<p class="text-xs text-red-400 ml-[5%]">Your answer is incorrect.</p>
+{{else if eq .State "4"}}
+<p class="text-xs text-red-400 ml-[5%]">Please log in to submit answers.</p>
+{{end}}
+
+<!-- Input, output, and sample solutions
+Hidden by default, user can click to show
+Co-authored by Charisman and Justin
+-->
+<div style="width: 90%;" class="ml-[5%]">
+  <div class="mt-3 text-1xl font-normal text-gray-900 ">
+    <a href="#" onclick="toggleContent(event, 'input-text-box')">Click here to view the input.</a>
+  </div>
+  <!-- <pre> is used to show text as is, which newlines and other whitespace formatting-->
+  <div id="input-text-box" class="hidden overflow-y-scroll bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 " style="max-height: 10vh;">
+    <button data-tooltip-target="input-copy-clipboard-tooltip" data-tooltip-placement="bottom" type="button" onclick="copyTextToClipboard('input-text-box')" class="flex items-center py-2 text-xs font-medium text-gray-600 hover:text-blue-700 copy-to-clipboard-button">
+      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg> <span class="copy-text">Copy</span>
+    </button>
+    <pre>{{.Pinput}}</pre>
+  </div>
+</div>
+<div style="width: 90%;" class="ml-[5%]">
+  <div class="mt-3 text-1xl font-normal text-gray-900 ">
+    <a href="#" onclick="toggleContent(event, 'answer-text-box')">Click here to view the expected answer.</a>
+  </div>
+  <div id="answer-text-box" class="hidden overflow-y-scroll bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 " style="max-height: 30vh;">
+    <button data-tooltip-target="answer-copy-clipboard-tooltip" data-tooltip-placement="bottom" type="button" onclick="copyTextToClipboard('answer-text-box')" class="flex items-center py-2 text-xs font-medium text-gray-600 hover:text-blue-700 copy-to-clipboard-button">
+      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg> <span class="copy-text">Copy</span>
+    </button>
+    <pre>{{.Panswer}}</pre>
+  </div>
+</div>
+<div style="width: 90%;" class="ml-[5%]">
+  <div class="mt-3 text-1xl font-normal text-gray-900 ">
+    <a href="#" onclick="toggleContent(event, 'solution-text-box')">Click here to view a sample solution.</a>
+  </div>
+  <div id="solution-text-box" class="hidden overflow-y-scroll bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 " style="max-height: 50vh;">
+    <button data-tooltip-target="solution-copy-clipboard-tooltip" data-tooltip-placement="bottom" type="button" onclick="copyTextToClipboard('solution-text-box')" class="flex items-center py-2 text-xs font-medium text-gray-600 hover:text-blue-700 copy-to-clipboard-button">
+      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg> <span class="copy-text">Copy</span>
+    </button>
+    <pre>{{.Psolution}}</pre>
+  </div>
+</div>
+
+
+<script>
+  // Function used to copy text
+  // Gets the text from a specific area <pre> </pre>
+  // Copies this text and sends alert to user
+  function copyTextToClipboard(targetId) {
+    const textBox = document.getElementById(targetId);
+    const text = textBox.querySelector("pre").textContent;
+    const tempTextArea = document.createElement("textarea");
+    tempTextArea.value = text;
+    document.body.appendChild(tempTextArea);
+    tempTextArea.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempTextArea);
+    alert("Text copied to clipboard!");
+  }
+  // Function used to show hidden divs
+  // Toggles divs that have "hidden" in class
+  function toggleContent(event, targetId) {
+    event.preventDefault();
+    var content = document.getElementById(targetId);
+    content.classList.toggle("hidden");
+  }
+</script>
+
+{{end}} 

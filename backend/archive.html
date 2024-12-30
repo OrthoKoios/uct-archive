@@ -1,0 +1,162 @@
+<!-- File: archive.html
+Authors: Charisman Aravinthan and Justin Dai
+Last Modified: June 2, 2023
+Version: 1.1.0
+This file contains the frontend for the archive page -->
+
+<!-- DOCTYPE already declared in base.html, so it is not needed here-->
+<!-- <body>, <head>, and <html> tags are also included from base.html-->
+{{define "content"}}
+<title>UCT | Archive</title>
+
+<!-- Search field for user to search problem name
+User cannot search nothing
+Searching modifies URL
+Clear button for user to clear the search filter
+Authored by Charisman-->
+<form onsubmit="return search(event)">
+  <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only ">Search</label>
+  <div class="flex mx-auto" style="width: 60%;">
+    <input type="search" id="default-search" class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 " placeholder="Filter by problem name..." required>
+    <button type="button" id="clear-search" class="text-white ml-2 bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center " onclick="clearFilter('search')">Clear</button>
+  </div>
+</form>
+
+<!-- Table header for the list of problems
+Contains options for more filters
+Contains option to add problem
+Authored by Justin-->
+<div class="flex mx-auto" style="width: 60%;">
+  <table class="w-full text-sm text-left text-gray-500 ">
+    <thead class="text-xs text-gray-700 uppercase bg-gray-50 ">
+      <tr>
+        <th scope="col" class="px-6 py-3">
+          Problem Name
+        </th>
+
+        <!-- Dropdown button for status filter
+        Clear option to clear status filter
+        Selecting filter modifies URL
+        Similar dropdowns for other filters-->
+        <th scope="col" class="px-6 py-3">
+          <button id="statusButton" data-dropdown-toggle="status" data-dropdown-trigger="hover" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center " type="button">Status<svg class="w-4 h-4 ml-2" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
+          <div id="status" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 ">
+            <!-- Upon clicking on a filter or clear button, modifies the URL
+            Sets the status variable to a specific status, letting the website to know what status to filter for
+            Similar for other filters-->
+            <ul class="py-2 text-sm text-gray-700 " aria-labelledby="dropdownHoverButton">
+              <li>
+                <a href="javascript:void(0)" onclick="clearFilter('status')" style="color: red;" class="block px-4 py-2 hover:bg-gray-100 ">Clear</a>
+              </li>
+              <li>
+                <a href="javascript:void(0)" onclick="addQueryParam('status', 'Attempted')" class="block px-4 py-2 hover:bg-gray-100 ">Attempted</a>
+              </li>
+              <li>
+                <a href="javascript:void(0)" onclick="addQueryParam('status', 'Unattempted')" class="block px-4 py-2 hover:bg-gray-100 ">Unattempted</a>
+              </li>
+              <li>
+                <a href="javascript:void(0)" onclick="addQueryParam('status', 'Solved')" class="block px-4 py-2 hover:bg-gray-100 ">Solved</a>
+              </li>
+            </ul>
+          </div>
+        </th>
+
+        <th scope="col" class="px-6 py-3">
+          <button id="difficultyButton" data-dropdown-toggle="difficulty" data-dropdown-trigger="hover" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center " type="button">Difficulty<svg class="w-4 h-4 ml-2" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
+          <!-- Dropdown menu -->
+          <div id="difficulty" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 ">
+            <ul class="py-2 text-sm text-gray-700 " aria-labelledby="dropdownHoverButton">
+              <li>
+                <a href="javascript:void(0)" onclick="clearFilter('difficulty')" style="color: red;" class="block px-4 py-2 hover:bg-gray-100 ">Clear</a>
+              </li>
+              <li>
+                <a href="javascript:void(0)" onclick="addQueryParam('difficulty', 'Easy')" class="block px-4 py-2 hover:bg-gray-100 ">Easy</a>
+              </li>
+              <li>
+                <a href="javascript:void(0)" onclick="addQueryParam('difficulty', 'Medium')" class="block px-4 py-2 hover:bg-gray-100 ">Medium</a>
+              </li>
+              <li>
+                <a href="javascript:void(0)" onclick="addQueryParam('difficulty', 'Hard')" class="block px-4 py-2 hover:bg-gray-100 ">Hard</a>
+              </li>
+            </ul>
+          </div>
+        </th>
+
+        <!-- List of tags constantly changes so dropdown options are not static-->
+        <th scope="col" class="px-6 py-3">
+          <button id="tagsButton" data-dropdown-toggle="tags" data-dropdown-trigger="hover" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center " type="button">Tags<svg class="w-4 h-4 ml-2" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
+          <!-- Dropdown menu -->
+          <div id="tags" class="z-10 hidden overflow-y-scroll bg-white divide-y divide-gray-100 rounded-lg shadow w-44 " style="max-height: 40vh;">
+            <ul class="py-2 text-sm text-gray-700 " aria-labelledby="dropdownHoverButton">
+              <li>
+                <a href="javascript:void(0)" onclick="clearFilter('tag')" style="color: red;" class="block px-4 py-2 hover:bg-gray-100 ">Clear</a>
+              </li>
+              {{range $tag, $empty := .Tags}}
+              <li>
+                <a href="javascript:void(0)" onclick="addQueryParam('tag', '{{ $tag }}')" class="block px-4 py-2 hover:bg-gray-100 ">{{ $tag }}</a>
+              </li>
+              {{end}}
+            </ul>
+          </div>
+        </th>
+      </tr>
+    </thead>
+
+    <!-- Lists all the problems and their info
+    Range loops through all the problems-->
+    <tbody>
+      {{range .Problems}}
+      <tr class="bg-white border-b ">
+        <!-- Clicking on problem name redirects to specific problem page-->
+        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap w-1/4">
+          <a href="problem/{{ .Name }}" class="font-semibold text-gray-900 underline decoration-indigo-500">{{ .Name }}</a>
+        </th>
+        <td class="px-6 py-4 w-1/5">
+          {{ .Status }}
+        </td>
+        <td class="px-6 py-4 w-1/5">
+          {{ .Difficulty }}
+        </td>
+        <td class="px-6 py-4 w-7/20">
+          {{ .ListTags }}
+        </td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  // Function to modify link with filter options
+  // Checks url to see if the parameter already exists
+  // If so, replaces it. Else, adds it
+  function addQueryParam(name, value) {
+    const url = window.location.href;
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has(name)) {
+      urlParams.set(name, value);
+    } else {
+      urlParams.append(name, value);
+    }
+    const updatedUrl = `${url.split('?')[0]}?${urlParams.toString()}`;
+    window.location.href = updatedUrl;
+  }
+  // Function to search for problem by name
+  // Modifies URL using addQueryParam function
+  function search(event) {
+    event.preventDefault(); // prevent the form from submitting
+    const input = document.getElementById('default-search');
+    const query = input.value;
+    addQueryParam('search', query);
+  }
+  // Function to clear filters
+  // Deletes the url parameter for a specific parameter name
+  function clearFilter(filterName) {
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.delete(filterName);
+    const updatedUrl = `${window.location.pathname}?${urlParams.toString()}`;
+    window.location.href = updatedUrl;
+  }
+</script>
+
+{{end}} 
